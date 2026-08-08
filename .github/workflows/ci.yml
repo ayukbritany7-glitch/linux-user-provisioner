@@ -14,13 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install ShellCheck
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
-
       - name: Run ShellCheck
-        run: shellcheck -x usermanager.sh
+        uses: koalaman/shellcheck-action@v1
+        with:
+          files: |
+            usermanager.sh
 
   bash-syntax:
     name: Bash Syntax Check
@@ -45,4 +43,4 @@ jobs:
       - name: Run usermanager in dry-run mode
         env:
           DEBIAN_FRONTEND: noninteractive
-        run: sudo ./usermanager.sh --file employees.csv --dry-run --yes
+        run: ./usermanager.sh --file employees.csv --dry-run --yes
