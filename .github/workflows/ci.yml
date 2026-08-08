@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   execute-shell:
     # Uses GitHub's Red Hat Enterprise Linux image
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
     - name: Pull code from GitHub
