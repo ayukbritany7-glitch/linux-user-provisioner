@@ -60,9 +60,9 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Must run as root
-if [[ $(id -u) -ne 0 ]]; then
-    die "This script must be run as root (sudo)."
+# Require root only when NOT doing a dry-run
+if [[ ${DRY_RUN:-0} -eq 0 && $(id -u) -ne 0 ]]; then
+    die "This script must be run as root (sudo) unless --dry-run is used."
 fi
 
 if [[ -z "$CSV_FILE" || ! -f "$CSV_FILE" ]]; then
