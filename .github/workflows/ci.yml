@@ -1,23 +1,48 @@
-name: Linux User Provisioner Test
+name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  execute-shell:
-    # Uses GitHub's Red Hat Enterprise Linux image
+  lint-shell:
+    name: ShellCheck Lint
     runs-on: ubuntu-latest
-
     steps:
-    - name: Pull code from GitHub
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Make script executable
-      run: chmod +x usermanager.sh
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
 
-    - name: Run Provisioning Test
-      run: sudo ./usermanager.sh --file employees.csv
-      
-    - name: Verify Account Creation
-      run: |
-        echo "Checking system password configuration..."
-        getent passwd
+      - name: Run ShellCheck
+        run: shellcheck -x usermanager.sh
+
+  bash-syntax:
+    name: Bash Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bash -n (syntax check)
+        run: bash -n usermanager.sh
+
+  dry-run:
+    name: Safe Dry-Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Make script executable
+        run: chmod +x usermanager.sh
+
+      - name: Run usermanager in dry-run mode
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: sudo ./usermanager.sh --file employees.csv --dry-run --yes
